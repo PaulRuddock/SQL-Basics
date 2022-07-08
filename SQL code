@@ -1,0 +1,17 @@
+Create database db1;
+Use db1;
+alter table sales add S_no integer; 
+alter table sales add categories char;
+alter table prod modify stock varchar(10);
+alter table cust rename as customer_to_customer;
+alter table customer_to_customer rename as customer_details;
+alter table sales drop column S_no;
+alter table sales drop column categories;
+select order_no, c_id, order_date, price, qty from sales;
+select * from prod where category = 'stationary';
+select distinct(category) from prod;
+select * from sales where qty>2 and price<500;
+select c_name from customer_details where c_name like '%a';
+select * from prod order by price desc;
+select p_code, category from prod where length(category)>=6 group by category;
+select sales.order_no, sales.c_id from sales join customer_details on (sales.c_id=customer_details.c_id);
