@@ -1,0 +1,14 @@
+create database db2;
+use db2;
+select count(pid) from patients;
+select pid, p_name, gender, disease from patients where age = (select max(age) from patients);
+select pid, p_name, current_date as Today from patients;
+select p_name as Old_Name, upper(p_name) as New_Name from patients;
+select p_name, length(p_name) from patients;
+select p_name, left(gender,1) as Gender from patients;
+select p_name, doctor_name, concat(p_name, ' ', doctor_name) as p_d from patients;
+select p_name, age, log(10,age) as log_age from patients;
+select p_name, date, right(date,4) as year from patients;
+select p_name, age, if(age>50, 'Yes', 'No') as 'Y/N' from patients;
+select doctor_name as d_name, doctor_name as d_name_dup, count(doctor_name) as occurance from 
+patients group by doctor_name having occurance>1;
