@@ -1,0 +1,21 @@
+create database db3;
+use db3;
+
+-- I want to find the name and salaries of employees who have a higher salary than the employee with the surname "Kumar".
+
+select f_name, salary from emp where salary >
+(select salary from emp where l_name = 'Kumar');
+
+-- I now want to find the names of employees who earn more than the average salary.
+
+select emp_id, l_name from emp where salary > 
+(select avg(salary) from emp);
+
+-- Now we are looking to list all employees who earn more than any of the "Shipping Clerks" - job_id = HP122.
+
+select emp_id, f_name, salary from emp where salary > 
+(select max(salary) from emp where job_id = 'HP122') order by salary asc;
+
+-- The final task here is to list the 3 highest earners within the database.
+
+select f_name, emp_id, salary from emp order by salary desc limit 3;
