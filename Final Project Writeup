@@ -1,0 +1,76 @@
+create database employee;
+
+use employee;
+
+select emp_id, first_name, last_name, gender, dept 
+from emp_record order by emp_id asc;
+
+select emp_id, first_name, last_name, gender, dept, emp_rating 
+from emp_record where emp_rating < 2;
+
+select emp_id, first_name, last_name, gender, dept, emp_rating 
+from emp_record where emp_rating > 4;
+
+select emp_id, first_name, last_name, gender, dept, emp_rating 
+from emp_record where emp_rating > 2 and emp_rating < 4;
+
+select concat(first_name, ' ', last_name) as NAME 
+from emp_record where dept = 'Finance';
+
+select manager_id, count(emp_id) 
+from emp_record 
+where manager_id is not null group by manager_id order by manager_id asc;
+
+select * from emp_record where dept = 'healthcare'
+union
+select * from emp_record where dept = 'finance';
+
+select emp_id, first_name, last_name, role, dept, emp_rating, avg(emp_rating) 
+from emp_record group by dept;
+
+select role, min(emp_rating), max(emp_rating) from emp_record group by role;
+
+select emp_id, first_name, last_name, exp, rank() over (order by exp desc) as 'Rank' 
+from emp_record;
+
+create view Test as select emp_id, first_name, last_name, country, salary 
+from emp_record where salary > 6000;
+
+select * from Test;
+
+select * from (select * from emp_record where exp>10) as tab;
+
+DELIMITER //
+
+CREATE PROCEDURE 3PlusExp()
+BEGIN
+	SELECT *  FROM emp_record where exp>3;
+END //
+delimiter ;
+Call 3PlusExp();
+
+delimiter $$
+create function check_role(exp integer)
+returns VARCHAR(40)
+deterministic
+begin
+declare chck VARCHAR(40);
+If exp < 2 then set chck = "JUNIOR DATA SCIENTIST";
+elseif exp >=2 and exp < 5 then set chck = "ASSOCIATE DATA SCIENTIST";
+elseif exp >=5 and exp < 10 then set chck = "SENIOR DATA SCIENTIST";
+elseif exp >= 10 and exp < 12 then set chck = "LEAD DATA SCIENTIST";
+elseif exp >= 12 then set chck = "MANAGER";
+end if; return (chck);
+end $$
+delimiter ;
+
+select emp_id, first_name, last_name, role, check_role(exp) 
+from data_science_team where role != check_role(exp);
+
+CREATE INDEX FirstName ON emp_record (FIRST_NAME(10));
+
+Select EMP_ID, FIRST_NAME, LAST_NAME, SALARY, EMP_RATING, sum((0.05*salary)*emp_rating) 
+as comm from emp_record group by emp_id order by emp_id asc;
+
+Select country, avg(salary) from emp_record group by country;
+select continent, avg(salary) from emp_record group by continent;
