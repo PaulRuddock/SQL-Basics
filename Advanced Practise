@@ -1,0 +1,84 @@
+These are some advanced SQL techniques that I learnt and then created questions based off the Final Project dataset. 
+I used these questions during training classes I conducted on advanced SQL to assess students and ensure they had a good understanding.
+
+Question 11: Create a new table called EmployeeArchives. Now create a trigger that will move any record that is deleted from emp_record into EmployeeArchives. 
+Test this works by deleting the record with Employee ID E010 and examining both tables. 
+
+Answer:
+create table EmployeeArchives (emp_id text, first_name text, last_name text, gender text); 
+DELIMITER $$ CREATE TRIGGER before_employees_delete
+BEFORE DELETE
+ON emp_record FOR EACH ROW
+BEGIN
+    INSERT INTO EmployeeArchives(emp_id,first_name,last_name,gender)
+    VALUES(OLD.EMP_ID,OLD.FIRST_NAME,OLD.LAST_NAME,OLD.GENDER);
+END$$     
+DELIMITER ;
+
+delete from emp_record where emp_id='E010'; select emp_id from EmployeeArchives;
+select emp_id from emp_record;
+
+Question 12 Part 1: A new employee has informed us during the onboarding process that he believes he should be paid more than anyone else at the company due to his status.
+Begin a transaction and insert the below details into our emp_record table (HINT: you need to create a variable for salary, DO NOT COMMIT CHANGES):
+
+Question 12 Part 2: Once you have completed the above task, search the emp_record table for our new record, has it been inserted correctly? 
+The company has decided that they will not make Mr Jordan the highest earner and therefore have terminated his contract before the end of the onboarding process, 
+your task is to remove all traces of Mr Jordan from our database using our transaction, as if they were never there (Do not delete record from table).
+
+EMP_ID            E641
+FIRST_NAME        Michael
+LAST_NAME         Jordan  
+GENDER            M
+ROLE              Data Scientist
+DEPT              Healthcare
+EXP               2
+COUNTRY           England
+CONTINENT         Europe
+SALARY            ?
+EMP_RATING        5
+MANAGER_ID        E101
+PROJ_ID           P103
+
+Answer:
+start transaction;
+select @salary:=max(SALARY)+1 from emp_record;
+INSERT INTO emp_record
+(`EMP_ID`,
+`FIRST_NAME`,
+`LAST_NAME`,
+`GENDER`,
+`ROLE`,
+`DEPT`,
+`EXP`,
+`COUNTRY`,
+`CONTINENT`,
+`SALARY`,
+`EMP_RATING`,
+`MANAGER_ID`,
+`PROJ_ID`)
+VALUES
+('E641',
+'Michael',
+'Jordan',
+'M',
+'SENIOR DATA SCIENTIST',
+'HEALTHCARE',
+2,
+'ENGLAND',
+'EUROPE',
+@salary,
+5,
+'E101',
+'P103');
+select * from emp_record where emp_id='E641';
+rollback;
+
+Question 13: Using Dynamic SQL, complete one query showing all male employees, and another showing all female employees. 
+
+Answer:
+PREPARE statement 
+FROM 'SELECT * FROM emp_record WHERE GENDER =?';
+SET @GENDERM = 'M';
+SET @GENDERF = 'F';
+EXECUTE statement USING @GENDERM;
+EXECUTE statement USING @GENDERF;
